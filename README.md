@@ -3,4 +3,4 @@ discord bot for dsc.gg/crocs
 
 yeah hi xd
 
-# join dsc.gg/crocs :D
+# join https://dsc.gg/crocs :D
