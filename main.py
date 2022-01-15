@@ -91,7 +91,7 @@ async def snipe(message):
     if snipe_message_content==None:
         await message.channel.send("Couldn't find anything to snipe!")
     else:
-        embed = discord.Embed(description=f"`Author:` <@{snipe_message_author}> \n `Message:` \n {snipe_message_content}")
+        embed = discord.Embed(description=f"`Author:` \n <@{snipe_message_author}> \n `Message:` \n {snipe_message_content}")
         embed.set_footer(text=f"Asked by {message.author.name}#{message.author.discriminator}", icon_url=message.author.avatar_url)
         embed.set_author(name= f"Sniped!")
         await message.channel.send(embed=embed)
