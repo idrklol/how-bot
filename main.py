@@ -9,7 +9,7 @@ intents = discord.Intents.default()
 intents.members = True
 client = commands.Bot(command_prefix="w.", intents=intents)
 client.remove_command("help")
-cogs = ["events.emote_thingy"]
+cogs = ["events.on_message"]
 
 
 @client.event
