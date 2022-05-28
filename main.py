@@ -38,7 +38,7 @@ async def on_command_error(ctx, error):
     if isinstance(error, commands.MissingRequiredArgument):
         await ctx.send('Please pass in all requirements')
     if isinstance(error, commands.MissingPermissions):
-        await ctx.send("You dont have all the requirements xd")
+        await ctx.send("You don't have permission to do that")
 
 
 @client.event
