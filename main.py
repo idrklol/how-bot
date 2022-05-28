@@ -1,13 +1,14 @@
 import discord
-import webserver
+import neverSleep
 from discord.ext import commands
 import os
 import asyncio
-import random
+
+neverSleep.awake("https://howbot.idrklol.repl.co", False)
 
 intents = discord.Intents.default()
 intents.members = True
-client = commands.Bot(command_prefix="w.", intents=intents)
+client = commands.Bot(command_prefix=".", intents=intents)
 client.remove_command("help")
 cogs = ["events.on_message"]
 
@@ -15,7 +16,7 @@ cogs = ["events.on_message"]
 @client.event
 async def on_ready():
     await client.change_presence(activity=discord.Activity(
-        type=discord.ActivityType.watching, name="you - dsc.gg/crocs"))
+        type=discord.ActivityType.watching, name="you - .gg/bottle"))
     print("i'm up :D")
     for cog in cogs:
         try:
@@ -65,38 +66,65 @@ async def on_member_remove(member):
         f'Someone just left...\nMay {member.name}#{member.discriminator} rest in peace.'
     )
 
+
 snipe_message_content = None
 snipe_message_author = None
 snipe_message_id = None
+
 
 @client.event
 async def on_message_delete(message):
 
     global snipe_message_content
     global snipe_message_author
+    global sn_author_name
     global snipe_message_id
 
     snipe_message_content = message.content
     snipe_message_author = message.author.id
     snipe_message_id = message.id
+    sn_author_name = client.get_user(snipe_message_author)
     await asyncio.sleep(60)
 
     if message.id == snipe_message_id:
         snipe_message_author = None
         snipe_message_content = None
         snipe_message_id = None
+        sn_author_name = None
+
 
 @client.command()
 async def snipe(message):
-    if snipe_message_content==None:
+    if snipe_message_content == None:
         await message.channel.send("Couldn't find anything to snipe!")
     else:
-        embed = discord.Embed(description=f"`Author:` \n <@{snipe_message_author}> \n `Message:` \n {snipe_message_content}")
-        embed.set_footer(text=f"Asked by {message.author.name}#{message.author.discriminator}", icon_url=message.author.avatar_url)
-        embed.set_author(name= f"Sniped!")
+        embed = discord.Embed(description=snipe_message_content)
+        embed.set_footer(
+            text=
+            f"Asked by {message.author.name}#{message.author.discriminator}",
+            icon_url=message.author.avatar_url)
+        embed.set_author(name=f"{sn_author_name}")
         await message.channel.send(embed=embed)
         return
 
-webserver.keep_alive()
+
+@client.command()
+async def ping(ctx):
+    await ctx.send(f'{round(client.latency * 1000)}ms')
+
+
+@client.command(aliases=["av", "pfp"])
+async def avatar(ctx, member: discord.Member = None):
+    if member == None:
+        member = ctx.author
+
+    avatar = member.avatar_url
+
+    embed = discord.Embed(title=f'{member.name}\'s avatar')
+    embed.set_footer(
+        text=f"Asked by {ctx.author.name}#{ctx.author.discriminator}")
+    embed.set_image(url=avatar)
+    await ctx.reply(embed=embed)
+
 
 client.run(os.environ['token'])
