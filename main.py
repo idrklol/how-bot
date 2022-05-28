@@ -126,5 +126,12 @@ async def avatar(ctx, member: discord.Member = None):
     embed.set_image(url=avatar)
     await ctx.reply(embed=embed)
 
+@client.command(aliases=["mc", "membercount"])
+async def members(ctx):
+  member_count = len(ctx.guild.members)
+  user_count = len([m for m in ctx.guild.members if not m.bot])
+  msg=f"all: `{member_count}`\nusers: `{user_count}`"
+  await ctx.reply(msg)
+
 
 client.run(os.environ['token'])
