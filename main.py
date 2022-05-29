@@ -3,6 +3,7 @@ import neverSleep
 from discord.ext import commands
 import os
 import asyncio
+import sys
 
 neverSleep.awake("https://howbot.idrklol.repl.co", False)
 
@@ -11,6 +12,18 @@ intents.members = True
 client = commands.Bot(command_prefix=".", intents=intents)
 client.remove_command("help")
 cogs = ["events.on_message"]
+
+
+def restart_bot():
+    os.execv(sys.executable, ['python'] + sys.argv)
+
+
+@client.command(aliases=["reboot"])
+@commands.has_permissions(administrator=True)
+async def restart(ctx):
+    await ctx.reply("Success")
+    await print('-' * 10 + f'\nRestarting\n' + '-' * 10)
+    restart_bot()
 
 
 @client.event
@@ -120,7 +133,8 @@ async def avatar(ctx, member: discord.Member = None):
 
     avatar = member.avatar_url
 
-    embed = discord.Embed(title=f'{member.name}\'s avatar')
+    embed = discord.Embed(title=f'{member.name}\'s avatar',
+                          description=f'[Download]({member.avatar_url})')
     embed.set_footer(
         text=f"Asked by {ctx.author.name}#{ctx.author.discriminator}")
     embed.set_image(url=avatar)
@@ -144,4 +158,29 @@ async def clean(ctx, limit: int):
     await ctx.message.delete()
 
 
+@client.command()
+@commands.has_permissions(ban_members = True)
+async def ban(ctx, member: discord.Member, *, reason = 'Unspecified'):
+    embed = discord.Embed(title=f'***Banned `{member}` for `{reason}`***', color=0x38805d)
+    await member.ban(reason = reason)
+    await ctx.send(embed=embed, delete_after=10)
+    await ctx.message.delete()
+
+
+@client.command()
+@commands.has_permissions(administrator = True)
+async def unban(ctx, *, member):
+    banned_users = await ctx.guild.bans()
+    member_name, member_discriminator = member.split("#")
+
+    for ban_entry in banned_users:
+        user = ban_entry.user
+
+        if (user.name, user.discriminator) == (member_name, member_discriminator):
+            await ctx.guild.unban(user)
+            await ctx.send(f'Unbanned `{member}`', delete_after=10)
+            await ctx.message.delete()
+            return
+  
+  
 client.run(os.environ['token'])
